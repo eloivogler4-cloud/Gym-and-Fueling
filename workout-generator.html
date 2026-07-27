@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Generator - Gym Tracker & Fueling Hub</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        :root {
+            --primary: #16786f;
+            --secondary: #ff6b35;
+            --accent: #e2a33e;
+            --bg-light: #eef4f1;
+            --text-dark: #12293a;
+            --text-soft: #4c6577;
+            --border: #d7e2dd;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 15px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 20px 0 60px;
+        }
+
+        .generator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .section {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .section h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .muscle-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .muscle-group:hover {
+            background: #e0ebe8;
+        }
+
+        .muscle-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .muscle-group label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .muscle-group .intensity-input {
+            width: 60px;
+            padding: 6px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .frequency-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .freq-card {
+            padding: 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .freq-card:hover {
+            border-color: var(--primary);
+        }
+
+        .freq-card.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .freq-card .number {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .freq-card .label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .experience-select {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .exp-card {
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .exp-card:hover {
+            border-color: var(--primary);
+        }
+
+        .exp-card.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .generated-workout {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 40px;
+        }
+
+        .workout-day {
+            background: var(--bg-light);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .workout-day h4 {
+            margin: 0 0 12px 0;
+            color: var(--text-dark);
+        }
+
+        .exercise-in-day {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .exercise-card {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .exercise-card .name {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .exercise-card .details {
+            font-size: 12px;
+            color: var(--text-soft);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-secondary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .header-with-profile {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .profile-icon-btn:hover {
+            background: var(--secondary);
+        }
+
+        @media (max-width: 768px) {
+            .generator-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .frequency-options {
+                grid-template-columns: 1fr;
+            }
+
+            .exercise-in-day {
+                grid-template-columns: 1fr;
+            }
+
+            .header-with-profile {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="index.html" class="back-link">← Back to Home</a>
+            <h1>Workout Generator</h1>
+            <p class="tagline">Create a personalized balanced workout plan</p>
+        </div>
+    </header>
+
+    <nav class="main-nav">
+        <div class="container">
+            <ul>
+                <li><a href="index.html">🏠 Home</a></li>
+                <li><a href="workout-generator.html">💪 Workout Plan</a></li>
+                <li><a href="workout-history.html">📊 History</a></li>
+                <li><a href="exercises.html">🏋️ Exercises</a></li>
+                <li><a href="nutrition.html">🍎 Nutrition</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <div class="header-with-profile">
+                <div>
+                    <h2>Create Your Workout</h2>
+                    <p style="color: var(--text-soft);">Select muscles, frequency, and experience level for a custom plan</p>
+                </div>
+                <button class="profile-icon-btn" onclick="openProfile()" title="Edit Profile">👤</button>
+            </div>
+
+            <div class="generator-grid">
+                <!-- Left Column: Configuration -->
+                <div class="section">
+                    <h2>Training Setup</h2>
+
+                    <h3 style="font-size: 14px; font-weight: 600; margin-top: 20px; margin-bottom: 12px;">Frequency</h3>
+                    <div class="frequency-options" id="frequencyOptions">
+                        <div class="freq-card" data-freq="3" onclick="selectFrequency(3)">
+                            <div class="number">3</div>
+                            <div class="label">Days/Week</div>
+                        </div>
+                        <div class="freq-card" data-freq="4" onclick="selectFrequency(4)">
+                            <div class="number">4</div>
+                            <div class="label">Days/Week</div>
+                        </div>
+                        <div class="freq-card" data-freq="5" onclick="selectFrequency(5)">
+                            <div class="number">5</div>
+                            <div class="label">Days/Week</div>
+                        </div>
+                        <div class="freq-card" data-freq="6" onclick="selectFrequency(6)">
+                            <div class="number">6</div>
+                            <div class="label">Days/Week</div>
+                        </div>
+                    </div>
+
+                    <h3 style="font-size: 14px; font-weight: 600; margin-top: 20px; margin-bottom: 12px;">Experience Level</h3>
+                    <div class="experience-select" id="experienceSelect">
+                        <div class="exp-card" data-exp="beginner" onclick="selectExperience('beginner')">Beginner</div>
+                        <div class="exp-card" data-exp="intermediate" onclick="selectExperience('intermediate')">Intermediate</div>
+                        <div class="exp-card" data-exp="advanced" onclick="selectExperience('advanced')">Advanced</div>
+                    </div>
+
+                    <h3 style="font-size: 14px; font-weight: 600; margin-top: 20px; margin-bottom: 12px;">Target Muscles (Priority 1-10)</h3>
+                    <div id="musclesList">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Right Column: Summary -->
+                <div class="section">
+                    <h2>Summary</h2>
+                    <div id="summary" style="min-height: 300px; color: var(--text-soft);">
+                        <p>Select muscles to see your workout summary</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generated Workout -->
+            <div id="workoutContainer" style="display: none;">
+                <div class="generated-workout">
+                    <h2>Your Generated Workout Plan</h2>
+                    <div id="workoutPlan">
+                        <!-- Populated by JavaScript -->
+                    </div>
+
+                    <div class="buttons" style="margin-top: 24px;">
+                        <button class="btn btn-primary" onclick="saveWorkout()">💾 Save Workout</button>
+                        <button class="btn btn-outline" onclick="regenerateWorkout()">🔄 Regenerate</button>
+                        <button class="btn btn-outline" onclick="downloadPDF()">📥 Download PDF</button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn btn-secondary btn-large" onclick="generateWorkout()" style="padding: 16px 40px; font-size: 16px;">Generate Workout Plan</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+        <div style="background: white; border-radius: 12px; max-width: 500px; width: 100%; padding: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h2 style="margin: 0;">Edit Profile</h2>
+                <button onclick="closeProfile()" style="background: none; border: none; font-size: 24px; cursor: pointer;">×</button>
+            </div>
+
+            <div class="field" style="margin-bottom: 16px;">
+                <label>Name</label>
+                <input type="text" id="profileName" placeholder="Your name" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+            </div>
+
+            <div class="field" style="margin-bottom: 16px;">
+                <label>Age</label>
+                <input type="number" id="profileAge" placeholder="Age" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+                <div class="field">
+                    <label>Height (cm)</label>
+                    <input type="number" id="profileHeight" placeholder="Height" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+                </div>
+                <div class="field">
+                    <label>Weight (kg)</label>
+                    <input type="number" id="profileWeight" placeholder="Weight" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+                </div>
+            </div>
+
+            <div class="field" style="margin-bottom: 16px;">
+                <label>Gender</label>
+                <select id="profileGender" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+                    <option value="">Select...</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="field" style="margin-bottom: 16px;">
+                <label>Experience Level</label>
+                <select id="profileExperience" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button class="btn btn-outline" onclick="closeProfile()">Cancel</button>
+                <button class="btn btn-secondary" onclick="saveProfile()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/storage-manager.js"></script>
+    <script>
+        const muscleGroups = [
+            { id: 'chest', label: 'Chest', exercises: ['Bench Press', 'Incline Dumbbell Press', 'Cable Flyes'] },
+            { id: 'back', label: 'Back', exercises: ['Barbell Rows', 'Lat Pulldowns', 'Face Pulls'] },
+            { id: 'shoulders', label: 'Shoulders', exercises: ['Overhead Press', 'Lateral Raises', 'Reverse Flyes'] },
+            { id: 'biceps', label: 'Biceps', exercises: ['Barbell Curls', 'Dumbbell Curls', 'Cable Curls'] },
+            { id: 'triceps', label: 'Triceps', exercises: ['Tricep Dips', 'Rope Pushdowns', 'Close Grip Bench'] },
+            { id: 'forearms', label: 'Forearms', exercises: ['Wrist Curls', 'Reverse Wrist Curls', 'Farmer Walks'] },
+            { id: 'quads', label: 'Quadriceps', exercises: ['Squats', 'Leg Press', 'Leg Extensions'] },
+            { id: 'hamstrings', label: 'Hamstrings', exercises: ['Deadlifts', 'Leg Curls', 'Romanian Deadlifts'] },
+            { id: 'glutes', label: 'Glutes', exercises: ['Hip Thrusts', 'Bulgarian Squats', 'Leg Press'] },
+            { id: 'calves', label: 'Calves', exercises: ['Calf Raises', 'Seated Calf Raises', 'Jump Rope'] },
+            { id: 'core', label: 'Core', exercises: ['Planks', 'Crunches', 'Cable Woodchops'] },
+            { id: 'cardio', label: 'Cardio', exercises: ['Treadmill', 'Cycling', 'Rowing'] }
+        ];
+
+        let selectedMuscles = {};
+        let selectedFrequency = 3;
+        let selectedExperience = 'intermediate';
+        let userProfile = {};
+        let storage = new StorageManager();
+
+        async function init() {
+            await storage.init();
+            loadPreferences();
+            renderMuscles();
+            setDefaultFrequency();
+            loadProfile();
+        }
+
+        function loadPreferences() {
+            const prefs = JSON.parse(localStorage.getItem('userPreferences') || '{}');
+            if (prefs.muscles) {
+                prefs.muscles.forEach(m => {
+                    selectedMuscles[m] = 5;
+                });
+            }
+            if (prefs.frequency) {
+                selectedFrequency = prefs.frequency;
+            }
+        }
+
+        function renderMuscles() {
+            const list = document.getElementById('musclesList');
+            list.innerHTML = '';
+            muscleGroups.forEach(muscle => {
+                const div = document.createElement('div');
+                div.className = 'muscle-group';
+                div.innerHTML = `
+                    <input type="checkbox" id="muscle_${muscle.id}" onchange="toggleMuscle('${muscle.id}')" ${selectedMuscles[muscle.id] ? 'checked' : ''}>
+                    <label for="muscle_${muscle.id}">${muscle.label}</label>
+                    <input type="range" class="muscle-group intensity-input" min="1" max="10" value="${selectedMuscles[muscle.id] || 5}" onchange="updateMuscleIntensity('${muscle.id}', this.value)">
+                    <span style="font-size: 12px; color: var(--text-soft); width: 25px;">${selectedMuscles[muscle.id] || 5}</span>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function toggleMuscle(muscleId) {
+            if (selectedMuscles[muscleId]) {
+                delete selectedMuscles[muscleId];
+            } else {
+                selectedMuscles[muscleId] = 5;
+            }
+            renderMuscles();
+            updateSummary();
+        }
+
+        function updateMuscleIntensity(muscleId, value) {
+            selectedMuscles[muscleId] = parseInt(value);
+            updateSummary();
+        }
+
+        function selectFrequency(freq) {
+            selectedFrequency = freq;
+            document.querySelectorAll('.freq-card').forEach(card => card.classList.remove('active'));
+            document.querySelector(`[data-freq="${freq}"]`).classList.add('active');
+            updateSummary();
+        }
+
+        function selectExperience(exp) {
+            selectedExperience = exp;
+            document.querySelectorAll('.exp-card').forEach(card => card.classList.remove('active'));
+            document.querySelector(`[data-exp="${exp}"]`).classList.add('active');
+            updateSummary();
+        }
+
+        function setDefaultFrequency() {
+            const card = document.querySelector(`[data-freq="${selectedFrequency}"]`);
+            if (card) card.classList.add('active');
+            const expCard = document.querySelector(`[data-exp="${selectedExperience}"]`);
+            if (expCard) expCard.classList.add('active');
+        }
+
+        function updateSummary() {
+            const selected = Object.keys(selectedMuscles).map(id => {
+                const muscle = muscleGroups.find(m => m.id === id);
+                return `<li>${muscle.label} (Priority ${selectedMuscles[id]})</li>`;
+            }).join('');
+
+            document.getElementById('summary').innerHTML = `
+                <div>
+                    <h4>Configuration</h4>
+                    <p><strong>Frequency:</strong> ${selectedFrequency}x per week</p>
+                    <p><strong>Experience:</strong> ${selectedExperience}</p>
+                    <h4 style="margin-top: 16px;">Selected Muscles</h4>
+                    <ul style="padding-left: 20px;">${selected || '<li>No muscles selected</li>'}</ul>
+                </div>
+            `;
+        }
+
+        function generateWorkout() {
+            const muscleIds = Object.keys(selectedMuscles);
+            if (muscleIds.length === 0) {
+                alert('Please select at least one muscle group');
+                return;
+            }
+
+            // Generate workout split
+            const workoutPlan = generateWorkoutSplit(muscleIds, selectedFrequency, selectedExperience);
+            displayWorkout(workoutPlan);
+        }
+
+        function generateWorkoutSplit(muscles, frequency, experience) {
+            const workouts = [];
+            const sets = experience === 'beginner' ? 3 : experience === 'intermediate' ? 4 : 5;
+            const reps = experience === 'beginner' ? '10-12' : experience === 'intermediate' ? '8-10' : '6-8';
+
+            for (let day = 1; day <= frequency; day++) {
+                const dayMuscles = selectMusclesForDay(muscles, day, frequency);
+                const exercises = [];
+
+                dayMuscles.forEach(muscleId => {
+                    const muscle = muscleGroups.find(m => m.id === muscleId);
+                    const exercise = muscle.exercises[Math.floor(Math.random() * muscle.exercises.length)];
+                    exercises.push({
+                        name: exercise,
+                        muscle: muscle.label,
+                        sets: sets,
+                        reps: reps
+                    });
+                });
+
+                workouts.push({
+                    day: `Day ${day}`,
+                    exercises: exercises
+                });
+            }
+
+            return workouts;
+        }
+
+        function selectMusclesForDay(muscles, day, frequency) {
+            // Simple split logic
+            const musclesPerDay = Math.ceil(muscles.length / frequency);
+            const startIdx = ((day - 1) % frequency) * musclesPerDay;
+            return muscles.slice(startIdx, startIdx + musclesPerDay);
+        }
+
+        function displayWorkout(plan) {
+            let html = '';
+            plan.forEach(day => {
+                html += `
+                    <div class="workout-day">
+                        <h4>${day.day}</h4>
+                        <div class="exercise-in-day">
+                            ${day.exercises.map(ex => `
+                                <div class="exercise-card">
+                                    <div class="name">${ex.name}</div>
+                                    <div class="details">
+                                        <div>${ex.muscle}</div>
+                                        <div>${ex.sets} sets × ${ex.reps} reps</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('workoutPlan').innerHTML = html;
+            document.getElementById('workoutContainer').style.display = 'block';
+            window.scrollTo({ top: document.getElementById('workoutContainer').offsetTop - 100, behavior: 'smooth' });
+        }
+
+        function regenerateWorkout() {
+            generateWorkout();
+        }
+
+        function saveWorkout() {
+            alert('Workout saved! Check your history to view it.');
+        }
+
+        function downloadPDF() {
+            alert('PDF download coming soon!');
+        }
+
+        function openProfile() {
+            document.getElementById('profileModal').style.display = 'flex';
+        }
+
+        function closeProfile() {
+            document.getElementById('profileModal').style.display = 'none';
+        }
+
+        function loadProfile() {
+            const profile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+            userProfile = profile;
+            document.getElementById('profileName').value = profile.name || '';
+            document.getElementById('profileAge').value = profile.age || '';
+            document.getElementById('profileHeight').value = profile.height || '';
+            document.getElementById('profileWeight').value = profile.weight || '';
+            document.getElementById('profileGender').value = profile.gender || '';
+            document.getElementById('profileExperience').value = profile.experience || 'intermediate';
+        }
+
+        function saveProfile() {
+            userProfile = {
+                name: document.getElementById('profileName').value,
+                age: parseInt(document.getElementById('profileAge').value) || null,
+                height: parseInt(document.getElementById('profileHeight').value) || null,
+                weight: parseInt(document.getElementById('profileWeight').value) || null,
+                gender: document.getElementById('profileGender').value,
+                experience: document.getElementById('profileExperience').value
+            };
+            localStorage.setItem('userProfile', JSON.stringify(userProfile));
+            closeProfile();
+            alert('Profile saved!');
+        }
+
+        updateSummary();
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
