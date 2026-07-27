@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Misch-Rechner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #eef4f1;
+    --panel: #ffffff;
+    --ink: #12293a;
+    --ink-soft: #4c6577;
+    --line: #d7e2dd;
+    --tangerine: #ff6b35;
+    --teal: #16786f;
+    --amber: #e2a33e;
+    --amber-soft: #fbeed7;
+    --teal-soft: #e2f2ef;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(18,41,58,0.06) 1px, transparent 0);
+    background-size: 22px 22px;
+    color:var(--ink);
+    font-family:'Manrope', sans-serif;
+    padding:32px 20px 60px;
+  }
+  .wrap{max-width:1000px;margin:0 auto;}
+  header{margin-bottom:28px;}
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--teal);
+    font-weight:700;
+    margin-bottom:10px;
+  }
+  h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:clamp(28px,4vw,42px);
+    margin:0 0 8px;
+    letter-spacing:-0.01em;
+  }
+  header p{
+    color:var(--ink-soft);
+    font-size:15px;
+    max-width:560px;
+    line-height:1.5;
+    margin:0;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns: 1fr 1.15fr;
+    gap:20px;
+    align-items:start;
+  }
+  @media (max-width:760px){ .grid{grid-template-columns:1fr;} }
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:24px;
+  }
+  .field{margin-bottom:22px;}
+  .field:last-child{margin-bottom:0;}
+  label{
+    display:block;
+    font-size:13px;
+    font-weight:700;
+    color:var(--ink);
+    margin-bottom:8px;
+  }
+  .hint{font-size:12px;color:var(--ink-soft);margin-top:6px;line-height:1.4;}
+
+  input[type=number], select{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:16px;
+    background:#fbfdfc;
+    color:var(--ink);
+  }
+  input[type=range]{
+    width:100%;
+    accent-color:var(--tangerine);
+  }
+  .rangeVal{
+    font-family:'JetBrains Mono',monospace;
+    font-weight:700;
+    color:var(--tangerine);
+    font-size:14px;
+  }
+
+  .seg{
+    display:flex;
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+  }
+  .seg button{
+    flex:1;
+    border:none;
+    background:#fbfdfc;
+    padding:10px 6px;
+    font-family:'Manrope',sans-serif;
+    font-size:13px;
+    font-weight:700;
+    color:var(--ink-soft);
+    cursor:pointer;
+    border-left:1px solid var(--line);
+  }
+  .seg button:first-child{border-left:none;}
+  .seg button.active{
+    background:var(--teal);
+    color:#fff;
+  }
+
+  .subpanel{
+    border-top:1px dashed var(--line);
+    padding-top:18px;
+    margin-top:18px;
+  }
+
+  .calcBtn{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    background:var(--tangerine);
+    color:#fff;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:15px;
+    cursor:pointer;
+    margin-top:8px;
+    transition:transform .1s ease;
+  }
+  .calcBtn:active{transform:scale(0.98);}
+
+  /* Recipe label */
+  .label{
+    position:relative;
+    background:var(--panel);
+    border:2px dashed var(--line);
+    border-radius:16px;
+    padding:26px;
+  }
+  .label-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    border-bottom:1px solid var(--line);
+    padding-bottom:14px;
+    margin-bottom:18px;
+  }
+  .label-title{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:20px;
+    font-weight:700;
+  }
+  .batch{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    text-align:right;
+    line-height:1.5;
+  }
+  .stat-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    margin-bottom:16px;
+  }
+  .stat{
+    background:var(--teal-soft);
+    border-radius:12px;
+    padding:14px 16px;
+  }
+  .stat.amber{background:var(--amber-soft);}
+  .stat-label{
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--ink-soft);
+    margin-bottom:4px;
+  }
+  .stat-value{
+    font-family:'JetBrains Mono',monospace;
+    font-size:24px;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .stat-value span{font-size:14px;font-weight:500;color:var(--ink-soft);}
+  .stat.teal .stat-value{color:var(--teal);}
+  .stat.amber .stat-value{color:#b3781f;}
+
+  .measure{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-top:2px;
+  }
+  .measure b{color:var(--ink);font-weight:700;}
+
+  .divider{
+    border:none;
+    border-top:1px dashed var(--line);
+    margin:18px 0;
+  }
+
+  .schedule{
+    font-size:13.5px;
+    line-height:1.6;
+    color:var(--ink);
+  }
+  .schedule b{color:var(--teal);}
+
+  .note{
+    margin-top:16px;
+    background:#fff5ef;
+    border:1px solid #ffdcc4;
+    border-radius:10px;
+    padding:12px 14px;
+    font-size:13px;
+    color:#8a4420;
+    line-height:1.5;
+  }
+
+  footer{
+    margin-top:22px;
+    font-size:12px;
+    color:var(--ink-soft);
+    line-height:1.6;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Fueling-Werkstatt</div>
+    <h1>Misch-Rechner</h1>
+    <p>Wähle deine Einheit, die passenden Details und die Bedingungen — du bekommst ein Rezept aus Wasser, Zucker und Salz.</p>
+  </header>
+
+  <div class="grid">
+    <!-- INPUTS -->
+    <div class="card">
+
+      <div class="field">
+        <label>Einheit</label>
+        <div class="seg" id="sportSeg">
+          <button data-val="laufen" class="active">Laufen</button>
+          <button data-val="handball">Handball</button>
+          <button data-val="gym">Gym</button>
+        </div>
+      </div>
+
+      <!-- LAUFEN -->
+      <div id="laufenPanel" class="subpanel">
+        <div class="field">
+          <label>Trainingsart</label>
+          <div class="seg" id="laufTypSeg">
+            <button data-val="longrun" class="active">Longrun</button>
+            <button data-val="vo2max">VO2max-Intervalle</button>
+          </div>
+        </div>
+
+        <div id="longrunFields">
+          <div class="field">
+            <label for="dur">Dauer</label>
+            <input type="range" id="dur" min="20" max="300" step="5" value="90">
+            <div class="rangeVal"><span id="durVal">90</span> Minuten</div>
+          </div>
+          <div class="field">
+            <label for="pace">Pace (Minuten pro km)</label>
+            <input type="number" id="pace" min="3" max="9" step="0.1" value="5.5">
+            <div class="hint">z. B. 5:30 / km = 5,5</div>
+          </div>
+        </div>
+
+        <div id="vo2maxFields" style="display:none;">
+          <div class="field">
+            <label for="reps">Anzahl Intervalle</label>
+            <input type="range" id="reps" min="1" max="10" step="1" value="6">
+            <div class="rangeVal"><span id="repsVal">6</span> Wiederholungen</div>
+          </div>
+          <div class="field">
+            <label for="intervalType">Intervall-Länge</label>
+            <select id="intervalType">
+              <option value="400m">400 m</option>
+              <option value="1km">1 km</option>
+              <option value="1min">1 Minute</option>
+              <option value="4min" selected>4 Minuten</option>
+            </select>
+            <div class="hint" id="vo2Hint"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HANDBALL -->
+      <div id="handballPanel" class="subpanel" style="display:none;">
+        <div class="field">
+          <label>Art</label>
+          <div class="seg" id="handballTypSeg">
+            <button data-val="training" class="active">Training</button>
+            <button data-val="spiel">Spiel</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="durHandball">Dauer</label>
+          <input type="range" id="durHandball" min="20" max="180" step="5" value="90">
+          <div class="rangeVal"><span id="durHandballVal">90</span> Minuten</div>
+        </div>
+      </div>
+
+      <!-- GYM -->
+      <div id="gymPanel" class="subpanel" style="display:none;">
+        <div class="field">
+          <label for="durGym">Dauer</label>
+          <input type="range" id="durGym" min="20" max="180" step="5" value="60">
+          <div class="rangeVal"><span id="durGymVal">60</span> Minuten</div>
+        </div>
+        <div class="field">
+          <label for="exercises">Anzahl Übungen</label>
+          <input type="number" id="exercises" min="1" max="20" step="1" value="6">
+          <div class="hint">Ab ca. 8 Übungen rechnen wir mit etwas höherem Bedarf (dichtere/längere Session). Bei reinem Krafttraining ist der Effekt insgesamt aber kleiner als bei Ausdauersport.</div>
+        </div>
+      </div>
+
+      <div class="field subpanel">
+        <label>Wetter / Bedingungen</label>
+        <div class="seg" id="weatherSeg">
+          <button data-val="low">Kühl</button>
+          <button data-val="mid" class="active">Normal</button>
+          <button data-val="high">Heiß</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="bottle">Flaschengröße für "pro Liter"</label>
+        <input type="number" id="bottle" min="0.25" max="2" step="0.05" value="1">
+        <div class="hint" id="bottleHint">Liter</div>
+      </div>
+
+      <button id="calcBtn" class="calcBtn">Berechnen</button>
+    </div>
+
+    <!-- OUTPUT -->
+    <div class="label" id="output">
+      <div class="label-top">
+        <div class="label-title">Dein Rezept</div>
+        <div class="batch" id="batch">LAUFEN · LONGRUN<br>90 MIN</div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat teal">
+          <div class="stat-label">Wasser gesamt</div>
+          <div class="stat-value" id="waterOut">— <span>ml</span></div>
+        </div>
+        <div class="stat amber">
+          <div class="stat-label">Zucker gesamt</div>
+          <div class="stat-value" id="sugarOut">— <span>g</span></div>
+          <div class="measure" id="sugarMeasure"></div>
+        </div>
+      </div>
+      <div class="stat-row">
+        <div class="stat teal">
+          <div class="stat-label">Salz gesamt</div>
+          <div class="stat-value" id="saltOut">— <span>g</span></div>
+          <div class="measure" id="saltMeasure"></div>
+        </div>
+        <div class="stat amber">
+          <div class="stat-label">Kohlenhydrate</div>
+          <div class="stat-value" id="carbRateOut">— <span>g/h</span></div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="schedule" id="perLiter"></div>
+
+      <hr class="divider">
+
+      <div class="schedule" id="scheduleText"></div>
+
+      <div class="note" id="shortNote" style="display:none;">
+        Unter ca. 45 Minuten reicht meist reines Wasser — Zucker/Salz nur bei Hitze oder wenn du empfindlich schwitzt.
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Faustregeln, keine medizinische Beratung. Basis: 6–8 % Kohlenhydratkonzentration, Saccharose (Haushaltszucker) liefert Glukose + Fruktose im Verhältnis 1:1, 1 g Salz ≈ 393 mg Natrium. VO2max-Gesamtzeit ist geschätzt (Pausen 1:1 zur Belastungszeit). Bei Hitze, hohem Schweißverlust oder gesundheitlichen Einschränkungen individuell anpassen bzw. ärztlich abklären.
+  </footer>
+</div>
+
+<script>
+// ---- state ----
+let sportart = 'laufen';
+let laufTyp = 'longrun';
+let handballTyp = 'training';
+let weather = 'mid';
+
+const profiles = {
+  low:  { waterPerHour: 500, naPerLiter: 350 },
+  mid:  { waterPerHour: 650, naPerLiter: 500 },
+  high: { waterPerHour: 800, naPerLiter: 700 }
+};
+const tierOrder = ['low','mid','high'];
+
+const intervalWorkMin = {'400m':1.5, '1km':3.5, '1min':1, '4min':4};
+
+function fmt(n, decimals=0){
+  return n.toLocaleString('de-DE', {minimumFractionDigits:decimals, maximumFractionDigits:decimals});
+}
+
+function shiftTier(tier, weatherVal){
+  let idx = tierOrder.indexOf(tier);
+  if (weatherVal === 'high') idx = Math.min(idx+1, 2);
+  if (weatherVal === 'low') idx = Math.max(idx-1, 0);
+  return tierOrder[idx];
+}
+
+function carbsPerHour(min, tier){
+  let base;
+  if (min <= 45) base = 0;
+  else if (min <= 90) base = 30;
+  else if (min <= 150) base = 50;
+  else base = 75;
+  if (tier === 'high' && min > 90) base += 10;
+  return base;
+}
+
+function getDurationAndTier(){
+  let min, baseTier, sportLabel, batchLine;
+
+  if (sportart === 'laufen'){
+    if (laufTyp === 'longrun'){
+      min = parseInt(document.getElementById('dur').value,10);
+      const pace = parseFloat(document.getElementById('pace').value) || 5.5;
+      baseTier = pace < 4.5 ? 'high' : (pace <= 5.5 ? 'mid' : 'low');
+      sportLabel = 'LAUFEN · LONGRUN';
+      batchLine = `${min} MIN · ${fmt(pace,1)} MIN/KM`;
+    } else {
+      const reps = parseInt(document.getElementById('reps').value,10);
+      const type = document.getElementById('intervalType').value;
+      const work = intervalWorkMin[type];
+      min = Math.round(reps * (work + work)); // 1:1 Pause angenommen
+      baseTier = 'high';
+      sportLabel = 'LAUFEN · VO2MAX';
+      batchLine = `${reps}× ${type} · ≈ ${min} MIN GESAMT`;
+      document.getElementById('vo2Hint').textContent =
+        `Geschätzte Gesamtzeit inkl. Pausen (1:1): ≈ ${min} Minuten`;
+    }
+  } else if (sportart === 'handball'){
+    min = parseInt(document.getElementById('durHandball').value,10);
+    baseTier = handballTyp === 'spiel' ? 'high' : 'mid';
+    sportLabel = handballTyp === 'spiel' ? 'HANDBALL · SPIEL' : 'HANDBALL · TRAINING';
+    batchLine = `${min} MIN`;
+  } else {
+    min = parseInt(document.getElementById('durGym').value,10);
+    const exercises = parseInt(document.getElementById('exercises').value,10) || 6;
+    baseTier = exercises >= 8 ? 'mid' : 'low';
+    sportLabel = 'GYM';
+    batchLine = `${min} MIN · ${exercises} ÜBUNGEN`;
+  }
+
+  const finalTier = shiftTier(baseTier, weather);
+  return { min, tier: finalTier, sportLabel, batchLine };
+}
+
+function calc(){
+  const { min, tier, sportLabel, batchLine } = getDurationAndTier();
+  const bottleL = parseFloat(document.getElementById('bottle').value) || 1;
+  const p = profiles[tier];
+  const hours = min/60;
+
+  const carbRate = carbsPerHour(min, tier);
+  const totalWaterMl = p.waterPerHour * hours;
+  const totalCarbsG = carbRate * hours;
+  const totalNaMg = p.naPerLiter * (totalWaterMl/1000);
+  const saltG = totalNaMg / 393;
+
+  document.getElementById('batch').innerHTML = `${sportLabel}<br>${batchLine}`;
+  document.getElementById('waterOut').innerHTML = `${fmt(totalWaterMl)} <span>ml</span>`;
+  document.getElementById('sugarOut').innerHTML = `${fmt(totalCarbsG)} <span>g</span>`;
+  document.getElementById('saltOut').innerHTML = `${fmt(saltG,1)} <span>g</span>`;
+  document.getElementById('carbRateOut').innerHTML = `${fmt(carbRate)} <span>g/h</span>`;
+
+  const sugarTsp = totalCarbsG/4;
+  const sugarTbsp = totalCarbsG/12;
+  document.getElementById('sugarMeasure').innerHTML =
+    totalCarbsG > 0 ? `≈ <b>${fmt(sugarTbsp,1)} EL</b> (${fmt(sugarTsp,1)} TL)` : '';
+
+  const saltTsp = saltG/6;
+  document.getElementById('saltMeasure').innerHTML =
+    `≈ <b>${fmt(saltTsp,2)} TL</b> Salz`;
+
+  const litersTotal = totalWaterMl/1000;
+  const sugarPerL = litersTotal > 0 ? totalCarbsG/litersTotal : 0;
+  const saltPerL = litersTotal > 0 ? saltG/litersTotal : 0;
+  const conc = totalWaterMl > 0 ? (totalCarbsG/totalWaterMl*100) : 0;
+
+  document.getElementById('perLiter').innerHTML =
+    `<b>Pro Liter Wasser:</b> ${fmt(sugarPerL)} g Zucker (≈ ${fmt(sugarPerL/12,1)} EL) · ${fmt(saltPerL,1)} g Salz (≈ ${fmt(saltPerL/6,2)} TL)<br>
+     <b>Konzentration:</b> ${fmt(conc,1)} % ${conc>0 && conc<=8 ? '(guter Bereich)':''}`;
+
+  document.getElementById('bottleHint').textContent =
+    `Für eine ${fmt(bottleL,2)}-l-Flasche: ${fmt(sugarPerL*bottleL)} g Zucker + ${fmt(saltPerL*bottleL,1)} g Salz auffüllen.`;
+
+  const sipInterval = 15;
+  const sipMl = p.waterPerHour/60*sipInterval;
+  document.getElementById('scheduleText').innerHTML =
+    `<b>Trinktakt:</b> alle ${sipInterval} Min ca. ${fmt(sipMl)} ml (paar große Schlucke) — über die Einheit verteilt trinken, nicht alles auf einmal.`;
+
+  document.getElementById('shortNote').style.display = min <= 45 ? 'block' : 'none';
+}
+
+// ---- UI wiring ----
+function setActive(seg, val){
+  seg.querySelectorAll('button').forEach(b=>{
+    b.classList.toggle('active', b.dataset.val === val);
+  });
+}
+
+const sportSeg = document.getElementById('sportSeg');
+sportSeg.addEventListener('click', e=>{
+  if (e.target.tagName !== 'BUTTON') return;
+  sportart = e.target.dataset.val;
+  setActive(sportSeg, sportart);
+  document.getElementById('laufenPanel').style.display = sportart === 'laufen' ? 'block':'none';
+  document.getElementById('handballPanel').style.display = sportart === 'handball' ? 'block':'none';
+  document.getElementById('gymPanel').style.display = sportart === 'gym' ? 'block':'none';
+  calc();
+});
+
+const laufTypSeg = document.getElementById('laufTypSeg');
+laufTypSeg.addEventListener('click', e=>{
+  if (e.target.tagName !== 'BUTTON') return;
+  laufTyp = e.target.dataset.val;
+  setActive(laufTypSeg, laufTyp);
+  document.getElementById('longrunFields').style.display = laufTyp === 'longrun' ? 'block':'none';
+  document.getElementById('vo2maxFields').style.display = laufTyp === 'vo2max' ? 'block':'none';
+  calc();
+});
+
+const handballTypSeg = document.getElementById('handballTypSeg');
+handballTypSeg.addEventListener('click', e=>{
+  if (e.target.tagName !== 'BUTTON') return;
+  handballTyp = e.target.dataset.val;
+  setActive(handballTypSeg, handballTyp);
+  calc();
+});
+
+const weatherSeg = document.getElementById('weatherSeg');
+weatherSeg.addEventListener('click', e=>{
+  if (e.target.tagName !== 'BUTTON') return;
+  weather = e.target.dataset.val;
+  setActive(weatherSeg, weather);
+  calc();
+});
+
+document.getElementById('dur').addEventListener('input', function(){
+  document.getElementById('durVal').textContent = this.value; calc();
+});
+document.getElementById('durHandball').addEventListener('input', function(){
+  document.getElementById('durHandballVal').textContent = this.value; calc();
+});
+document.getElementById('durGym').addEventListener('input', function(){
+  document.getElementById('durGymVal').textContent = this.value; calc();
+});
+document.getElementById('reps').addEventListener('input', function(){
+  document.getElementById('repsVal').textContent = this.value; calc();
+});
+['pace','intervalType','exercises','bottle'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', calc);
+  document.getElementById(id).addEventListener('change', calc);
+});
+
+document.getElementById('calcBtn').addEventListener('click', calc);
+
+calc();
+</script>
+</body>
+</html>
