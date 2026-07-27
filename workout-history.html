@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout History - Gym Tracker & Fueling Hub</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        :root {
+            --primary: #16786f;
+            --secondary: #ff6b35;
+            --accent: #e2a33e;
+            --bg-light: #eef4f1;
+            --text-dark: #12293a;
+            --text-soft: #4c6577;
+            --border: #d7e2dd;
+            --success: #2ecc71;
+            --info: #3498db;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 28px;
+            color: var(--text-dark);
+        }
+
+        header p {
+            margin: 5px 0 0;
+            color: var(--text-soft);
+            font-size: 14px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 15px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 20px 0 60px;
+        }
+
+        /* Controls & Filters */
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-soft);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: white;
+            color: var(--text-dark);
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Stats Summary */
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-soft);
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-unit {
+            font-size: 12px;
+            color: var(--text-soft);
+            font-weight: 500;
+            margin-left: 4px;
+        }
+
+        /* Workout List */
+        .workouts-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .workout-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .workout-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-color: var(--primary);
+        }
+
+        .workout-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .workout-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .workout-date {
+            font-size: 13px;
+            color: var(--text-soft);
+            margin: 4px 0 0;
+        }
+
+        .workout-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: var(--primary);
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .workout-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .meta-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-soft);
+            margin-bottom: 4px;
+        }
+
+        .meta-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        /* Overview Mode */
+        .exercises-summary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .exercise-tag {
+            background: var(--bg-light);
+            color: var(--text-dark);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .exercise-tag.completed {
+            background: var(--success);
+            color: white;
+        }
+
+        .performance-summary {
+            background: var(--bg-light);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        .performance-text {
+            font-size: 13px;
+            color: var(--text-dark);
+            line-height: 1.5;
+        }
+
+        .performance-highlight {
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .view-details-btn {
+            margin-top: 12px;
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .view-details-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Detailed View */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-soft);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: var(--text-dark);
+        }
+
+        .modal-header {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 0 8px;
+        }
+
+        .modal-subtitle {
+            font-size: 13px;
+            color: var(--text-soft);
+            margin: 0;
+        }
+
+        .sets-container {
+            margin-bottom: 25px;
+        }
+
+        .exercise-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--bg-light);
+            border-radius: 8px;
+        }
+
+        .exercise-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0 0 12px;
+        }
+
+        .sets-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .set-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .set-label {
+            font-weight: 600;
+            color: var(--text-soft);
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .set-data {
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .notes-section {
+            background: var(--bg-light);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--secondary);
+            margin-top: 20px;
+        }
+
+        .notes-label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-soft);
+            margin-bottom: 8px;
+        }
+
+        .notes-text {
+            font-size: 14px;
+            color: var(--text-dark);
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-soft);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .empty-state-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0 0 8px;
+        }
+
+        .empty-state-text {
+            font-size: 14px;
+            margin: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .stats-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .workout-header {
+                flex-direction: column;
+            }
+
+            .workout-badge {
+                margin-top: 10px;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+
+            .set-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="index.html" class="back-link">← Back to Home</a>
+            <h1>Workout History</h1>
+            <p>Track your training progress and review past workouts</p>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Controls -->
+            <div class="controls">
+                <button class="btn btn-primary" id="addWorkoutBtn">+ Log Workout</button>
+                
+                <div class="filter-group">
+                    <span class="filter-label">Sort by:</span>
+                    <select id="sortFilter">
+                        <option value="date-desc">Newest First</option>
+                        <option value="date-asc">Oldest First</option>
+                        <option value="duration-desc">Longest Duration</option>
+                        <option value="duration-asc">Shortest Duration</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <span class="filter-label">View:</span>
+                    <button class="btn btn-secondary active" id="viewOverview">Overview</button>
+                    <button class="btn btn-secondary" id="viewDetailed">Detailed</button>
+                </div>
+            </div>
+
+            <!-- Stats Summary -->
+            <div class="stats-summary">
+                <div class="stat-card">
+                    <div class="stat-label">Total Workouts</div>
+                    <div><span class="stat-value" id="totalWorkouts">0</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">This Month</div>
+                    <div><span class="stat-value" id="monthWorkouts">0</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Duration</div>
+                    <div><span class="stat-value" id="totalDuration">0</span><span class="stat-unit">hrs</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Current Streak</div>
+                    <div><span class="stat-value" id="currentStreak">0</span><span class="stat-unit">days</span></div>
+                </div>
+            </div>
+
+            <!-- Workouts List -->
+            <div class="workouts-container" id="workoutsList">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Detailed Workout Modal -->
+    <div class="modal" id="workoutModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeModal">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Workout Details</h2>
+                <p class="modal-subtitle" id="modalDate"></p>
+            </div>
+            <div id="modalBody">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/workout-history.js"></script>
+</body>
+</html>
