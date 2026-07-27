@@ -1,0 +1,14 @@
+{
+  "name": "gym-and-fueling-core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Core domain and modules for Gym Tracker & Fueling Hub (foundation only)",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "node dist/app.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
