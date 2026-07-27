@@ -5,6 +5,149 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gym Tracker & Fueling Hub</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .onboarding-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .onboarding-modal.active {
+            display: flex;
+        }
+
+        .onboarding-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .onboarding-content h2 {
+            margin-bottom: 24px;
+            color: var(--text-dark);
+        }
+
+        .muscle-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .muscle-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border: 2px solid var(--line);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .muscle-option:hover {
+            border-color: var(--primary);
+            background: var(--bg-light);
+        }
+
+        .muscle-option input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .muscle-option label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+            font-weight: 600;
+        }
+
+        .frequency-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .freq-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--line);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .freq-btn:hover {
+            border-color: var(--primary);
+        }
+
+        .freq-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .onboarding-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .onboarding-buttons button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-skip {
+            background: var(--line);
+            color: var(--text-dark);
+        }
+
+        .btn-skip:hover {
+            background: var(--text-soft);
+        }
+
+        .btn-start {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-start:hover {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 600px) {
+            .muscle-selector {
+                grid-template-columns: 1fr;
+            }
+
+            .onboarding-content {
+                padding: 24px;
+            }
+
+            .frequency-selector {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -20,7 +163,10 @@
                 <li><a href="index.html">🏠 Home</a></li>
                 <li><a href="#features">Features</a></li>
                 <li><a href="#tools">Tools</a></li>
-                <li><a href="exercises.html">Exercises</a></li>
+                <li><a href="workout-generator.html">💪 Workout Plan</a></li>
+                <li><a href="workout-history.html">📊 History</a></li>
+                <li><a href="exercises.html">🏋️ Exercises</a></li>
+                <li><a href="nutrition.html">🍎 Nutrition</a></li>
             </ul>
         </div>
     </nav>
@@ -38,32 +184,38 @@
                 <h2>Available Tools</h2>
                 <div class="tools-grid">
                     <div class="tool-card primary">
-                        <h3>💪 Fueling Calculator</h3>
-                        <p>Calculate your daily caloric and macronutrient requirements based on your fitness goals.</p>
-                        <a href="Fueling-Calculator.html" class="btn btn-primary">Open Calculator</a>
+                        <h3>💪 Workout Generator</h3>
+                        <p>Choose your target muscles and training frequency. Get a personalized balanced workout plan designed for your needs.</p>
+                        <a href="workout-generator.html" class="btn btn-primary">Create Workout Plan</a>
                     </div>
 
                     <div class="tool-card">
                         <h3>📊 Gym Progress Tracker</h3>
                         <p>Log your workouts, track performance metrics, and monitor your gains over time.</p>
-                        <a href="gym-tracker.html" class="btn btn-secondary">Coming Soon</a>
+                        <a href="gym-tracker.html" class="btn btn-secondary">Log Workout</a>
                     </div>
 
                     <div class="tool-card">
-                        <h3>📋 Workout Plans</h3>
-                        <p>Access pre-made workout routines or create your own customized training plans.</p>
-                        <a href="workout-plans.html" class="btn btn-secondary">Coming Soon</a>
+                        <h3>📋 Workout History</h3>
+                        <p>View all your previous workouts, analyze trends, and track your training consistency.</p>
+                        <a href="workout-history.html" class="btn btn-secondary">View History</a>
                     </div>
 
                     <div class="tool-card">
-                        <h3>🍎 Nutrition Guide</h3>
-                        <p>Explore meal ideas, recipes, and nutrition tips tailored to your fitness goals.</p>
-                        <a href="nutrition-guide.html" class="btn btn-secondary">Coming Soon</a>
+                        <h3>🥗 Nutrition Guide</h3>
+                        <p>Calculate your caloric and macronutrient requirements, get meal ideas and nutrition tips.</p>
+                        <a href="nutrition.html" class="btn btn-secondary">Nutrition Hub</a>
+                    </div>
+
+                    <div class="tool-card">
+                        <h3>💪 Fueling Calculator</h3>
+                        <p>Calculate your daily caloric and macronutrient requirements based on your fitness goals.</p>
+                        <a href="Fueling-Calculator.html" class="btn btn-secondary">Open Calculator</a>
                     </div>
 
                     <div class="tool-card">
                         <h3>🏋️ Exercise Library</h3>
-                        <p>Browse exercises, view technique, variations, and targeted muscles.</p>
+                        <p>Browse all exercises, filter by muscle and difficulty. View technique, variations, and targeted muscles.</p>
                         <a href="exercises.html" class="btn btn-secondary">Open Library</a>
                     </div>
                 </div>
@@ -77,6 +229,122 @@
         </div>
     </footer>
 
-    <script src="js/script.js"></script>
+    <!-- Onboarding Modal -->
+    <div class="onboarding-modal" id="onboardingModal">
+        <div class="onboarding-content">
+            <h2>🏋️ Let's Get Started!</h2>
+            <p>Tell us which muscles you want to focus on and how often you want to train. We'll create a balanced workout plan just for you.</p>
+
+            <h3 style="margin-top: 24px; margin-bottom: 12px;">Select Muscles to Train</h3>
+            <div class="muscle-selector" id="muscleSelector">
+                <!-- Populated by JavaScript -->
+            </div>
+
+            <h3 style="margin-top: 24px; margin-bottom: 12px;">Training Frequency</h3>
+            <div class="frequency-selector" id="frequencySelector">
+                <button class="freq-btn" data-freq="3">3x/week</button>
+                <button class="freq-btn" data-freq="4">4x/week</button>
+                <button class="freq-btn" data-freq="5">5x/week</button>
+                <button class="freq-btn" data-freq="6">6x/week</button>
+            </div>
+
+            <div class="onboarding-buttons">
+                <button class="btn-skip" onclick="skipOnboarding()">Skip</button>
+                <button class="btn-start" onclick="startWorkoutPlan()">Create Plan</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/storage-manager.js"></script>
+    <script>
+        const muscleGroups = [
+            { id: 'chest', label: 'Chest', emoji: '🔘' },
+            { id: 'back', label: 'Back', emoji: '🔙' },
+            { id: 'shoulders', label: 'Shoulders', emoji: '💪' },
+            { id: 'biceps', label: 'Biceps', emoji: '💪' },
+            { id: 'triceps', label: 'Triceps', emoji: '💪' },
+            { id: 'forearms', label: 'Forearms', emoji: '🦾' },
+            { id: 'quads', label: 'Quadriceps', emoji: '🦵' },
+            { id: 'hamstrings', label: 'Hamstrings', emoji: '🦵' },
+            { id: 'glutes', label: 'Glutes', emoji: '🍑' },
+            { id: 'calves', label: 'Calves', emoji: '🦵' },
+            { id: 'core', label: 'Core', emoji: '⭕' },
+            { id: 'cardio', label: 'Cardio', emoji: '❤️' }
+        ];
+
+        let selectedMuscles = [];
+        let selectedFrequency = 3;
+
+        function initOnboarding() {
+            // Check if user already has preferences
+            const hasOnboarded = localStorage.getItem('hasOnboarded');
+            if (hasOnboarded) {
+                document.getElementById('onboardingModal').style.display = 'none';
+                return;
+            }
+
+            // Populate muscle selector
+            const muscleSelector = document.getElementById('muscleSelector');
+            muscleGroups.forEach(muscle => {
+                const label = document.createElement('label');
+                label.className = 'muscle-option';
+                label.innerHTML = `
+                    <input type="checkbox" data-muscle="${muscle.id}" onchange="toggleMuscle('${muscle.id}')">
+                    <span>${muscle.emoji} ${muscle.label}</span>
+                `;
+                muscleSelector.appendChild(label);
+            });
+
+            // Set default frequency
+            document.querySelector('[data-freq="3"]').classList.add('active');
+
+            // Frequency button listeners
+            document.querySelectorAll('.freq-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.freq-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedFrequency = parseInt(this.dataset.freq);
+                });
+            });
+
+            document.getElementById('onboardingModal').classList.add('active');
+        }
+
+        function toggleMuscle(muscleId) {
+            if (selectedMuscles.includes(muscleId)) {
+                selectedMuscles = selectedMuscles.filter(m => m !== muscleId);
+            } else {
+                selectedMuscles.push(muscleId);
+            }
+        }
+
+        function skipOnboarding() {
+            localStorage.setItem('hasOnboarded', 'true');
+            document.getElementById('onboardingModal').classList.remove('active');
+        }
+
+        function startWorkoutPlan() {
+            if (selectedMuscles.length === 0) {
+                alert('Please select at least one muscle group');
+                return;
+            }
+
+            // Save preferences
+            localStorage.setItem('hasOnboarded', 'true');
+            localStorage.setItem('userPreferences', JSON.stringify({
+                muscles: selectedMuscles,
+                frequency: selectedFrequency,
+                timestamp: new Date().toISOString()
+            }));
+
+            document.getElementById('onboardingModal').classList.remove('active');
+            
+            // Redirect to workout generator
+            window.location.href = 'workout-generator.html';
+        }
+
+        // Initialize on load
+        window.addEventListener('load', initOnboarding);
+    </script>
 </body>
 </html>
