@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Exercise Library - Gym Tracker & Fueling Hub</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .exercise-list { display: grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap: 1rem; }
+    .exercise-card { border: 1px solid #ddd; padding: 1rem; border-radius: 6px; background: #fff; }
+    .exercise-card h4 { margin: 0 0 .5rem 0; }
+    .badge { display:inline-block; padding:.2rem .5rem; background:#eee; border-radius:4px; margin-right:.25rem; font-size:.85em; }
+    #exerciseModal { display:none; position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(0,0,0,.5); align-items:center; justify-content:center; }
+    #exerciseModal .modal-inner { background:#fff; max-width:800px; width:90%; padding:1rem; border-radius:6px; max-height:90vh; overflow:auto; }
+    .muscle-list { display:flex; flex-wrap:wrap; gap:.5rem; }
+    .muscle { background:#f4f6f8; padding:.25rem .5rem; border-radius:4px; }
+    .controls { margin:1rem 0; display:flex; gap:.5rem; align-items:center; }
+    .search { flex:1; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Exercise Library</h1>
+      <p class="tagline">Browse exercises, technique, common mistakes and variations.</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="container">
+      <div class="controls">
+        <input id="searchInput" class="search" placeholder="Search by name, muscle or equipment..." />
+        <button id="addDemoBtn">Populate demo exercises</button>
+      </div>
+
+      <div id="list" class="exercise-list" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <div id="exerciseModal" role="dialog" aria-modal="true">
+    <div class="modal-inner">
+      <button id="closeModal">Close</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script src="js/exercises.js"></script>
+</body>
+</html>
