@@ -6,6 +6,9 @@
   <title>Exercise Library - Gym Tracker & Fueling Hub</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
+    .back-link { display: block; margin-bottom: 1.5rem; }
+    .back-link a { color: #16786f; text-decoration: none; font-weight: 600; }
+    .back-link a:hover { text-decoration: underline; }
     .exercise-list { display: grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap: 1rem; }
     .exercise-card { border: 1px solid #ddd; padding: 1rem; border-radius: 6px; background: #fff; }
     .exercise-card h4 { margin: 0 0 .5rem 0; }
@@ -28,6 +31,10 @@
 
   <main>
     <section class="container">
+      <div class="back-link">
+        <a href="index.html">← Back to Home</a>
+      </div>
+      
       <div class="controls">
         <input id="searchInput" class="search" placeholder="Search by name, muscle or equipment..." />
         <button id="addDemoBtn">Populate demo exercises</button>
